@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  db_mongo:
+    container_name: mongo_nest
+    image: mongo:8.0.3-noble
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: <ROOT_USERNAME>
+      MONGO_INITDB_ROOT_PASSWORD: <ROOT_PASSWORD>
+    volumes:
+      - ./mongo:/data/db
+    ports:
+      - 27017:27017
+    restart: always
