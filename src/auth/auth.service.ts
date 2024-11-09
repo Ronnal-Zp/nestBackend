@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcryptjs from 'bcryptjs';
@@ -6,6 +6,7 @@ import * as bcryptjs from 'bcryptjs';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -37,6 +38,25 @@ export class AuthService {
     }
 
   }
+
+
+  async login(LoginDto: LoginDto): Promise<User> {
+    const { email, password } = LoginDto;
+    const user = await this.userModel.findOne({ email })
+    
+    if(!user) {
+      throw new UnauthorizedException('Credenciales no validas.');  
+    }
+
+    if(!bcryptjs.compareSync(password, user.password)) {
+      throw new UnauthorizedException('Credenciales no validas.');
+    }
+
+    const { password:_, ...rest } = user.toJSON();
+
+    return { ...rest };
+  }
+
 
   findAll() {
     return `This action returns all auth`;
