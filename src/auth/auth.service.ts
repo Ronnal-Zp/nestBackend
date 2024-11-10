@@ -43,7 +43,6 @@ export class AuthService {
 
   }
 
-
   async login(LoginDto: LoginDto): Promise<LoginResponse> {
     const { email, password } = LoginDto;
     const user = await this.userModel.findOne({ email })
@@ -64,6 +63,16 @@ export class AuthService {
     };
   }
 
+  async register(CreateUserDto: CreateUserDto): Promise<LoginResponse> {
+
+    const user = await this.create(CreateUserDto);
+    const token = this.getJwtToken({id: user._id })
+
+    return {
+      user,
+      token
+    }
+  }
 
   findAll() {
     return `This action returns all auth`;
