@@ -21,7 +21,6 @@ export class AuthController {
 
   @Get()
   findAll() {
-    console.log(process.env.MONGO_URI);
     return this.authService.findAll();
   }
 
