@@ -1,13 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuardGuard } from './guards/auth-guard/auth-guard.guard';
+import { PayloadJwt } from './interfaces/payload-jwt';
+import { LoginResponse } from './interfaces/login-response';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly jwtService: JwtService
+  ) {}
 
   @Post()
   create(@Body() CreateUserDto: CreateUserDto) {
@@ -29,6 +35,36 @@ export class AuthController {
   @Get()
   findAll() {
     return this.authService.findAll();
+  }
+
+  @Get('/check-token')
+  async checkToken(@Req() request: Request): Promise<LoginResponse> {
+    const token = this.authService.extractTokenFromHeader(request);
+    let user = null;
+
+    if (!token) {
+      throw new UnauthorizedException('Debe proporcionar el token.');
+    }
+
+    try {
+      const payload = await this.jwtService.verifyAsync<PayloadJwt>(
+        token, { secret: process.env.JWT_SEED }
+      );
+  
+      const user_id = payload.id;
+      user = await this.authService.findOne(user_id)  
+
+      if(!user) throw new UnauthorizedException('No existe el usuario.');
+      if(!user.isActive) throw new UnauthorizedException('El usuario esta inactivo');
+
+    } catch (error) {
+      throw new UnauthorizedException(error.message);
+    }
+    
+    return {
+      user,
+      token,
+    }
   }
 
   @Get(':id')

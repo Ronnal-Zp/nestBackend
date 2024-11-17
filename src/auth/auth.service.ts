@@ -82,6 +82,10 @@ export class AuthService {
     return await this.userModel.findById( id );
   }
 
+  async checkToken() {
+    
+  }
+
   update(id: number, updateAuthDto: UpdateAuthDto) {
     return `This action updates a #${id} auth`;
   }
@@ -93,6 +97,11 @@ export class AuthService {
   getJwtToken(payload: PayloadJwt): string {
     const token = this.jwtService.sign(payload);
     return token;
+  }
+
+  public extractTokenFromHeader(request: Request): string | undefined {
+    const [type, token] = request.headers['authorization']?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
   }
 
 }
