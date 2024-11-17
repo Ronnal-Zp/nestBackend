@@ -57,6 +57,3 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # db_mongo docker
 /mongo
-
-# docker-compose.yml
-docker-compose.yml

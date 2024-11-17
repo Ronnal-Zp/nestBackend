@@ -5,8 +5,8 @@ services:
     container_name: mongo_nest
     image: mongo:8.0.3-noble
     environment:
-      MONGO_INITDB_ROOT_USERNAME: <ROOT_USERNAME>
-      MONGO_INITDB_ROOT_PASSWORD: <ROOT_PASSWORD>
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 123456789
     volumes:
       - ./mongo:/data/db
     ports:
