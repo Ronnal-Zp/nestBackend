@@ -78,8 +78,8 @@ export class AuthService {
     return this.userModel.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  async findOne(id: string) {
+    return await this.userModel.findById( id );
   }
 
   update(id: number, updateAuthDto: UpdateAuthDto) {
